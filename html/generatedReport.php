@@ -171,35 +171,35 @@ function determineFourQuarters($month) {
 	);
 	
 	// Based on the value of month in the array, we create the quarter titles
-	if ($month == 12 || $month == 11 || $month == 10) {
-		$quarterTitle ['4'] = date ( "Y" ) . $quarterNames [3];
-		$quarterTitle ['3'] = date ( "Y" ) . $quarterNames [2];
-		$quarterTitle ['2'] = date ( "Y" ) . $quarterNames [1];
-		$quarterTitle ['1'] = date ( "Y" ) . $quarterNames [0];
+	if ($month >= 10 && $month <= 12) {
+		$quarterTitle ['4'] = date ( "Y" )       . $quarterNames [3];
+		$quarterTitle ['3'] = date ( "Y" )       . $quarterNames [2];
+		$quarterTitle ['2'] = date ( "Y" )       . $quarterNames [1];
+		$quarterTitle ['1'] = date ( "Y" )       . $quarterNames [0];
 		$quarterTitle ['0'] = (date ( "Y" ) - 1) . $quarterNames [3];
 	}
 	
-	if ($month == 7 || $month == 8 || $month == 9) {
-		$quarterTitle ['4'] = date ( "Y" ) . $quarterNames [2];
-		$quarterTitle ['3'] = date ( "Y" ) . $quarterNames [1];
-		$quarterTitle ['2'] = date ( "Y" ) . $quarterNames [0];
+	if ($month >= 7 && $month <= 9) {
+		$quarterTitle ['4'] = date ( "Y" )       . $quarterNames [2];
+		$quarterTitle ['3'] = date ( "Y" )       . $quarterNames [1];
+		$quarterTitle ['2'] = date ( "Y" )       . $quarterNames [0];
 		$quarterTitle ['1'] = (date ( "Y" ) - 1) . $quarterNames [3];
 		$quarterTitle ['0'] = (date ( "Y" ) - 1) . $quarterNames [2];
 	}
 	
-	if ($month == 5 || $month == 5 || $month == 6) {
-		$quarterTitle ['4'] = date ( "Y" ) . $quarterNames [1];
-		$quarterTitle ['3'] = date ( "Y" ) . $quarterNames [0];
+	if ($month >= 4 && $month <= 6) {
+		$quarterTitle ['4'] = date ( "Y" )       . $quarterNames [1];
+		$quarterTitle ['3'] = date ( "Y" )       . $quarterNames [0];
 		$quarterTitle ['2'] = (date ( "Y" ) - 1) . $quarterNames [3];
 		$quarterTitle ['1'] = (date ( "Y" ) - 1) . $quarterNames [2];
 		$quarterTitle ['0'] = (date ( "Y" ) - 1) . $quarterNames [1];
 	}
 	
-	if ($month == 1 || $month == 2 || $month == 3) {
-		$quarterTitle ['4'] = date ( "Y" ) . $quarterNames [0];
-		$quarterTitle ['3'] = (date ( "Y" ) - 1) . $quarterNames [1];
+	if ($month >= 1 && $month <= 3) {
+		$quarterTitle ['4'] = date ( "Y" )       . $quarterNames [0];
+		$quarterTitle ['3'] = (date ( "Y" ) - 1) . $quarterNames [3];
 		$quarterTitle ['2'] = (date ( "Y" ) - 1) . $quarterNames [2];
-		$quarterTitle ['1'] = (date ( "Y" ) - 1) . $quarterNames [3];
+		$quarterTitle ['1'] = (date ( "Y" ) - 1) . $quarterNames [1];
 		$quarterTitle ['0'] = (date ( "Y" ) - 1) . $quarterNames [0];
 	}
 	
@@ -513,11 +513,11 @@ global $errorStatus;
       function drawChartTotalDataPackages() {
         var data = google.visualization.arrayToDataTable([
           ['Quarter', 'Total Packages'],         
-          [<?php echo "'".$_SESSION['quarterTitle']['0']."'"; ?>, <?php echo $_SESSION['totalDataPackages0']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['1']."'"; ?>, <?php echo $_SESSION['totalDataPackages1']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['2']."'"; ?>, <?php echo $_SESSION['totalDataPackages2']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['3']."'"; ?>, <?php echo $_SESSION['totalDataPackages3']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['4']."'"; ?>, <?php echo $_SESSION['totalDataPackages4']; ?>],
+          [<?php echo "'".$_SESSION['quarterTitle']['0']."', ".$_SESSION['totalDataPackages0']; ?>],
+          [<?php echo "'".$_SESSION['quarterTitle']['1']."', ".$_SESSION['totalDataPackages1']; ?>],
+          [<?php echo "'".$_SESSION['quarterTitle']['2']."', ".$_SESSION['totalDataPackages2']; ?>],
+          [<?php echo "'".$_SESSION['quarterTitle']['3']."', ".$_SESSION['totalDataPackages3']; ?>],
+          [<?php echo "'".$_SESSION['quarterTitle']['4']."', ".$_SESSION['totalDataPackages4']; ?>],
         ]);
 
         var options = {
