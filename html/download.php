@@ -1,5 +1,8 @@
 <?php 
-$file = trim($_GET['path']);
+include "helpers.php";
+
+$file = "../".sanitizeFileName($_GET['path']);
+
 
 // force user to download the image
 if (file_exists($file)) {

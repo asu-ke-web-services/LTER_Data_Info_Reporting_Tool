@@ -1,6 +1,8 @@
 <?php
+include "helpers.php";
+
 $data = $_POST['data'];
-$file = '../download/'.$_POST['file'].'.png';
+$file = '../download/'.sanitizeFileName($_POST['file']).'.png';
 
 $uri =  substr($data,strpos($data,",")+1);
 
