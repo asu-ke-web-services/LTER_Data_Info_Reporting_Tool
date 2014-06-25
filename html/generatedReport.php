@@ -450,7 +450,12 @@ global $errorStatus;
 		if (isset ( $_SESSION ['totalDataPackages'] )){
 			unset ( $_SESSION ['totalDataPackages'] );		
 		}
+  /*  
+    echo "<pre>";
+print_r($_SESSION);
+    echo "</pre>";
 		
+   */
 		if (isset ( $_SESSION ['updateDataPackages'] )){
 			unset ( $_SESSION ['updateDataPackages'] );
 		}
