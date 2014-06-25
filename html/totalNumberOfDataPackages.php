@@ -15,17 +15,6 @@ function updateTotalDataPackagesInputData($beginDate, $endDate) {
 	callAuditReportTool( $url, $_POST ['username'], $_POST ['password'], "updateDataPackages");
 }
 
-// to get proper totals we need to count the data that was enterted older than the earliest quarter we're reporting on
-function totalDataPackagesBefore($endDate, $site) {
-	require_once('countPackagesInEachQuarter.php');
-	global $pastaURL;
-	$create_url = $pastaURL . "audit/report/?serviceMethod=createDataPackage&status=200&toTime=" . $endDate;
-	$create_response = callAuditReportTool( $create_url, $_POST ['username'], $_POST ['password']);
-	$delete_url = $pastaURL . "audit/report/?serviceMethod=deleteDataPackage&status=200&toTime=" . $endDate;
-	$delete_response = callAuditReportTool( $delete_url, $_POST ['username'], $_POST ['password']);
-  return countTotalPackages($create_response, $site) - countTotalPackages($delete_response, $site);
-}
-
 //Once we have the response from PASTA, we need to count the number of packages present and set those values which will be used to plot the graph.
 function createTotalDataPackagesOutput($xmlData, $quarter,$deleteCount,$site) {
 	$responseXML = new SimpleXMLElement( $xmlData);
