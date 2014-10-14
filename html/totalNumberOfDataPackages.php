@@ -66,11 +66,11 @@ function countCreateDataPackagesAYearAgo($endDate,$site){
 	$newEndDate = (date("Y") -1)."-".$month."-".(cal_days_in_month(CAL_GREGORIAN, $month,(date("Y")-1)));
 	
 	$url = $pastaURL . "audit/report/?serviceMethod=createDataPackage&status=200&toTime=" . $newEndDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 	$responseXML = new SimpleXMLElement( $xmlData);
 	
 	$url = $pastaURL . "audit/report/?serviceMethod=deleteDataPackage&status=200&toTime=" . $newEndDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 	
 	$deleteResponseXML = new SimpleXMLElement( $xmlData);
 	
@@ -103,7 +103,7 @@ function countUpdateDataPackagesAYearAgoQuarter($quarter,$site){
 	
 	
 	$url = $pastaURL . "audit/report/?serviceMethod=updateDataPackage&status=200&toTime=" . $beginDate . "&toTime=" . $endDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 
 	$responseXML = new SimpleXMLElement( $xmlData);
 
@@ -134,12 +134,12 @@ function countCreateDataPackagesAYearAgoQuarter($quarter,$site){
 	}
 
 	$url = $pastaURL . "audit/report/?serviceMethod=createDataPackage&status=200&fromTime=" . $beginDate . "&toTime=" . $endDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 
 	$responseXML = new SimpleXMLElement( $xmlData);
 	
 	$url = $pastaURL . "audit/report/?serviceMethod=deleteDataPackage&status=200&fromTime=" . $beginDate . "&toTime=" . $endDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 	
 	$deleteResponseXML = new SimpleXMLElement( $xmlData);
 
@@ -150,7 +150,7 @@ function countCreateDataPackagesAYearAgoQuarter($quarter,$site){
 function countDeletedPackages($beginDate, $endDate,$quarter, $site){	
 	global $pastaURL;
 	$url = $pastaURL . "audit/report/?serviceMethod=deleteDataPackage&status=200&fromTime=" . $beginDate . "&toTime=" . $endDate;
-	$xmlData = returnAuditReportToolOutput( $url, $_POST ['username'], $_POST ['password']);
+	$xmlData = callAuditReportTool( $url, $_POST ['username'], $_POST ['password']);
 	
 	$responseXML = new SimpleXMLElement( $xmlData);
 	

@@ -1,4 +1,6 @@
 <?php
+require_once ('countPackagesInEachQuarter.php');
+
 //This method is used to create the request to fetch the readDataEntity details. This service is called to count the number of downloads of the data package.
 function createDataPackagesDownloadsInputData($beginDate, $endDate) {
 	global $pastaURL;
@@ -15,7 +17,6 @@ function createDataPackagesArchiveDownloadsInputData($beginDate, $endDate) {
 function createDataPackagesDownloadOutput($xmlData, $quarter, $site) {
 	$responseXML = new SimpleXMLElement ( $xmlData );
 	
-	require_once ('countPackagesInEachQuarter.php');	
 	$count = countPackages ( $quarter, $responseXML , $site);
 	
 	$_SESSION ['dataPackageDownloads1'] = $count ['1'];
@@ -28,7 +29,6 @@ function createDataPackagesDownloadOutput($xmlData, $quarter, $site) {
 function createDataPackagesArchiveDownloadOutput($xmlData, $quarter, $site) {
 	$responseXML = new SimpleXMLElement ( $xmlData );
 
-	require_once ('countPackagesInEachQuarter.php');	
 	$count = countPackages ( $quarter, $responseXML, $site );
 	
 	$_SESSION ['dataPackageArchiveDownloads1'] = $count ['1'];

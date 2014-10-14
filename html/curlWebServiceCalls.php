@@ -20,8 +20,4 @@ function callAuditReportTool($url, $username, $password, $var_name_to_set=null) 
   }
   return $retValue;
 }
-//This method is used to just return the reponse that PASTA provides.
-function returnAuditReportToolOutput($url, $username, $password) {
-  return callAuditReportTool($url, $username, $password);
-}
 ?>

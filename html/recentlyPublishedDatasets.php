@@ -53,7 +53,7 @@ function recentlyPublishedDataSets($xmlData, $site) {
 	$size = (count($recentDataPackages) > 10 ? 10 : count($recentDataPackages));
 	for($i = 0; $i < $size; $i ++) {
 		$url = $pastaURL . "package/metadata/eml/" . $recentDataPackages [$randomNumbers [$i]];
-		$returnvalue = returnAuditReportToolOutput ( $url, $_POST ['username'], $_POST ['password'] );
+		$returnvalue = callAuditReportTool( $url, $_POST ['username'], $_POST ['password'] );
 		
 		$XML = new SimpleXMLElement ( $returnvalue );
 		$authorName = "";

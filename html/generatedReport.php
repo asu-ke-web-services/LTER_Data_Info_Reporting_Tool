@@ -234,7 +234,7 @@ function deleteFilesInDownloadDir(){
 function authenticatedUser() {
 	global $pastaURL;
 	$url = $pastaURL . "package/eml";
-	$test = returnAuditReportToolOutput ( $url, $_POST ['username'], $_POST ['password'] );
+	$test = callAuditReportTool( $url, $_POST ['username'], $_POST ['password'] );
 	$pos = strpos ( $test, "knb-lter-cap" );
 	if ($pos === false)
 		return false;

@@ -1,7 +1,7 @@
 <?php
 # redirect to /html
 #
-header("Location: /html/");
+header("Location: html/");
 
 ?>
 
