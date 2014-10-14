@@ -54,8 +54,12 @@ function recentlyPublishedDataSets($xmlData, $site) {
 	for($i = 0; $i < $size; $i ++) {
 		$url = $pastaURL . "package/metadata/eml/" . $recentDataPackages [$randomNumbers [$i]];
 		$returnvalue = callAuditReportTool( $url, $_POST ['username'], $_POST ['password'] );
-		
-		$XML = new SimpleXMLElement ( $returnvalue );
+	  try {
+      $XML = new SimpleXMLElement ( $returnvalue );
+    } catch(Exception $e) {
+      # TODO: this could request a datapackage that has been deleted from PASTA, which results in an xml parse error
+      error_log('Execption Parsing XML from '.$url.' '.$e);
+    }
 		$authorName = "";
 		$authorCount = 0;
 		foreach ( $XML->dataset->creator as $name ) {
