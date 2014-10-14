@@ -99,8 +99,17 @@ function generateReport($site) {
 	// Include the file that is used to compute the total number of package downloads and compute it
 	require_once ('dataPackageDownloads.php');
 	createDataPackagesDownloadsInputData ( $beginDate, $endDate );
-	if (isset ( $_SESSION ['dataPackageDownloads'] ) && $_SESSION ['dataPackageDownloads'] != null)
+	if (isset ( $_SESSION ['dataPackageDownloads'] ) && $_SESSION ['dataPackageDownloads'] != null) {
 		createDataPackagesDownloadOutput ( $_SESSION ['dataPackageDownloads'], $quarter , $site);
+  }else {
+    # else we need to mock the session variables
+    $_SESSION ['dataPackageDownloads1'] = 0;
+    $_SESSION ['dataPackageDownloads2'] = 0;
+    $_SESSION ['dataPackageDownloads3'] = 0;
+    $_SESSION ['dataPackageDownloads4'] = 0;
+    $_SESSION ['dataPackageDownloads0'] = 0;
+  }
+
 		
 		// Include the file that is used to compute the total number of archive package downloads and compute it
 	createDataPackagesArchiveDownloadsInputData ( $beginDate, $endDate );
@@ -253,7 +262,6 @@ function populateDropdownContent() {
 
 ?>
   <body>
-
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<div class="navbar-header">
@@ -446,7 +454,7 @@ global $errorStatus;
 	
 		} // end if isset( recentlyCreatedDataPackages and recentPackages)
 		//saveCurrentPage();
-		
+	/*	
 		if (isset ( $_SESSION ['totalDataPackages'] )){
 			unset ( $_SESSION ['totalDataPackages'] );		
 		}
@@ -463,6 +471,7 @@ global $errorStatus;
 		if (isset ( $_SESSION ['recentlyCreatedDataPackages'] )) {
 			unset ( $_SESSION ['recentlyCreatedDataPackages'] );
 		}
+   */
 		?>
 		
 		<?php if (isset ( $_POST ['submitReport'] )) { ?>
