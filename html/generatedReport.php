@@ -33,9 +33,11 @@ if (isset ( $_POST ['submitReport'] )) {
 	$errorStatus = "";
 
 	// Calling the starter method to generate report.
-	$reportGenerationStatus = generateReport ($_POST ['site']);
+  $reportGenerationStatus = generateReport ($_POST ['site']);
 
-	$_SESSION['site'] = $_POST ['site'];
+  //echo "dataPackageArchiveDownloads: ".$GLOBALS["dataPackageArchiveDownloads"];
+
+  $GLOBALS['site'] = $_POST ['site'];
 
 	// If the user credentials is not correct, exit the report generation without computing the report.
 	if ($reportGenerationStatus == "invalidLogin") {
@@ -53,7 +55,7 @@ if (isset ( $_POST ['submitReport'] )) {
 function generateReport($site) {
 	session_start ();
 
-	$username = $_POST ['username'];
+  $username = $_POST ['username'];
 	$password = $_POST ['password'];
 	$endDate = NULL;
 	$beginDate = NULL;
@@ -78,7 +80,7 @@ function generateReport($site) {
 
 	// If its an authenticated user, then only continue to generate the report.
 	if (! authenticatedUser ()) {
-		unset ( $_SESSION ['submitReport'] );
+		unset ( $GLOBALS ['submitReport'] );
 		return "invalidLogin";
 	}
 	deleteFilesInDownloadDir();
@@ -89,58 +91,55 @@ function generateReport($site) {
 	// Include the file that is used to compute the total number of packages and compute it
 	require_once ('totalNumberOfDataPackages.php');
 	createTotalDataPackagesInputData ( $beginDate, $endDate );
-	if (isset ( $_SESSION ['totalDataPackages'] ) && $_SESSION ['totalDataPackages'] != null) {
+	if (isset ( $GLOBALS ['totalDataPackages'] ) && $GLOBALS ['totalDataPackages'] != null) {
 		$deleteCount = countDeletedPackages ( $beginDate, $endDate, $quarter , $site);
-		createTotalDataPackagesOutput ( $_SESSION ['totalDataPackages'], $quarter, $deleteCount, $site );
-    unset($_SESSION ['totalDataPackages']);
+		createTotalDataPackagesOutput ( $GLOBALS ['totalDataPackages'], $quarter, $deleteCount, $site );
+    $GLOBALS ['totalDataPackages'] = -1;
 	}
-	// Adding a sleep command as making numerous calls to PASTA in a short interval results in failure to get the information.
-	sleep ( 2 );
+
+  // Adding a sleep command as making numerous calls to PASTA in a short interval results in failure to get the information.
+	sleep ( 4 );
 
 	// Include the file that is used to compute the total number of package downloads and compute it
 	require_once ('dataPackageDownloads.php');
 	createDataPackagesDownloadsInputData ( $beginDate, $endDate );
-	if (isset ( $_SESSION ['dataPackageDownloads'] ) && $_SESSION ['dataPackageDownloads'] != null) {
-		createDataPackagesDownloadOutput ( $_SESSION ['dataPackageDownloads'], $quarter , $site);
-    unset($_SESSION ['dataPackageDownloads']);
+	if (isset ( $GLOBALS ['dataPackageDownloads'] ) && $GLOBALS ['dataPackageDownloads'] != null) {
+		createDataPackagesDownloadOutput ( $GLOBALS ['dataPackageDownloads'], $quarter , $site);
+    $GLOBALS ['dataPackageDownloads'] = -1;
   }else {
     # else we need to mock the session variables
-    $_SESSION ['dataPackageDownloads1'] = 0;
-    $_SESSION ['dataPackageDownloads2'] = 0;
-    $_SESSION ['dataPackageDownloads3'] = 0;
-    $_SESSION ['dataPackageDownloads4'] = 0;
-    $_SESSION ['dataPackageDownloads0'] = 0;
+    $GLOBALS ['dataPackageDownloads1'] = 0;
+    $GLOBALS ['dataPackageDownloads2'] = 0;
+    $GLOBALS ['dataPackageDownloads3'] = 0;
+    $GLOBALS ['dataPackageDownloads4'] = 0;
+    $GLOBALS ['dataPackageDownloads0'] = 0;
   }
 
-
-		// Include the file that is used to compute the total number of archive package downloads and compute it
+  // Include the file that is used to compute the total number of archive package downloads and compute it
 	createDataPackagesArchiveDownloadsInputData ( $beginDate, $endDate );
-	if (isset ( $_SESSION ['dataPackageArchiveDownloads'] ) && $_SESSION ['dataPackageArchiveDownloads'] != null){
-    createDataPackagesArchiveDownloadOutput ( $_SESSION ['dataPackageArchiveDownloads'], $quarter , $site);
-    unset($_SESSION ['dataPackageArchiveDownloads']);
+	if (isset ( $GLOBALS ['dataPackageArchiveDownloads'] ) && $GLOBALS ['dataPackageArchiveDownloads'] != null){
+    createDataPackagesArchiveDownloadOutput ( $GLOBALS ['dataPackageArchiveDownloads'], $quarter , $site);
+    $GLOBALS ['dataPackageArchiveDownloads'] = -1;
   }
 
-
-		// Include the file that is used to compute the total number of packages that were updated and compute it
+  // Include the file that is used to compute the total number of packages that were updated and compute it
 	updateTotalDataPackagesInputData ( $beginDate, $endDate );
-	if (isset ( $_SESSION ['updateDataPackages'] ) && $_SESSION ['updateDataPackages'] != null){
-    updateDataPackagesOutput ( $_SESSION ['updateDataPackages'], $quarter, $site );
-    unset($_SESSION ['updateDataPackages']);
+	if (isset ( $GLOBALS ['updateDataPackages'] ) && $GLOBALS ['updateDataPackages'] != null){
+    updateDataPackagesOutput ( $GLOBALS ['updateDataPackages'], $quarter, $site );
+    $GLOBALS ['updateDataPackages'] = -1;
   }
 
-
-	countDataPackagesForYearAgo ( $quarter, $endDate,$site );
+  countDataPackagesForYearAgo ( $quarter, $endDate,$site );
 
 	// Include the file that is used to compute the random list to of packages created in the last three months.
 	require_once ('recentlyPublishedDatasets.php');
 	recentlyPublishedDataSetsInput ( $endDate );
-	if (isset ( $_SESSION ['recentlyCreatedDataPackages'] ) && $_SESSION ['recentlyCreatedDataPackages'] != null){
-    recentlyPublishedDataSets ( $_SESSION ['recentlyCreatedDataPackages'] , $site);
-    $_SESSION ['recentlyCreatedDataPackages'] = -1;
+	if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] ) && $GLOBALS ['recentlyCreatedDataPackages'] != null){
+    recentlyPublishedDataSets ( $GLOBALS ['recentlyCreatedDataPackages'] , $site);
+    $GLOBALS ['recentlyCreatedDataPackages'] = -1;
   }
 
-
-	return "success";
+  return "success";
 }
 // Method to compute the quarter to which we generate the report. Since we are calculating the report for one year, this report will have exactly 4 quarters
 function determineFourQuarters($month) {
@@ -224,17 +223,17 @@ function determineFourQuarters($month) {
 	}
 
 	// Creating the custom labels which will be added to the graph and table.
-	$_SESSION ['quarterTitle'] = $quarterTitle;
+	$GLOBALS ['quarterTitle'] = $quarterTitle;
 
 	if ($_POST ['quarter'] === 'current')
-		$_SESSION ['CurrentQuarterDate'] = "From " . $quarter ['4'] [count ( $quarter ['4'] ) - 1] . "/01/" . date ( "Y" ) . " to " . $quarter ['4'] [0] . "/" . (date ( "d" )) . "/" . date ( "Y" );
+		$GLOBALS ['CurrentQuarterDate'] = "From " . $quarter ['4'] [count ( $quarter ['4'] ) - 1] . "/01/" . date ( "Y" ) . " to " . $quarter ['4'] [0] . "/" . (date ( "d" )) . "/" . date ( "Y" );
 	else
-		$_SESSION ['CurrentQuarterDate'] = "From " . $quarter ['4'] [2] . "/01/" . date ( "Y" ) . " to " . $quarter ['4'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['4'] [count ( $quarter ['4'] ) - 1], (date ( "Y" )) ) . "/" . date ( "Y" );
+		$GLOBALS ['CurrentQuarterDate'] = "From " . $quarter ['4'] [2] . "/01/" . date ( "Y" ) . " to " . $quarter ['4'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['4'] [count ( $quarter ['4'] ) - 1], (date ( "Y" )) ) . "/" . date ( "Y" );
 
-	$_SESSION ['PreviousQuarterDate'] = "From " . $quarter ['3'] [2] . "/01/" . date ( "Y" ) . " to " . $quarter ['3'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['3'] [0], (date ( "Y" )) ) . "/" . date ( "Y" );
-	$_SESSION ['AsOfCurrentQuarterDate'] = "As of " . date ( "m" ) . "/" . date ( "d" ) . "/" . date ( "Y" );
-	$_SESSION ['AsOfPreviousQuarterDate'] = "As of " . $quarter ['3'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['3'] [0], (date ( "Y" )) ) . "/" . date ( "Y" );
-	$_SESSION ['AsOfPreviousYearDate'] = "As of " . date ( "m" ) . "/" . date ( "d" ) . "/" . (date ( "Y" ) - 1);
+	$GLOBALS ['PreviousQuarterDate'] = "From " . $quarter ['3'] [2] . "/01/" . date ( "Y" ) . " to " . $quarter ['3'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['3'] [0], (date ( "Y" )) ) . "/" . date ( "Y" );
+	$GLOBALS ['AsOfCurrentQuarterDate'] = "As of " . date ( "m" ) . "/" . date ( "d" ) . "/" . date ( "Y" );
+	$GLOBALS ['AsOfPreviousQuarterDate'] = "As of " . $quarter ['3'] [0] . "/" . cal_days_in_month ( CAL_GREGORIAN, $quarter ['3'] [0], (date ( "Y" )) ) . "/" . date ( "Y" );
+	$GLOBALS ['AsOfPreviousYearDate'] = "As of " . date ( "m" ) . "/" . date ( "d" ) . "/" . (date ( "Y" ) - 1);
 
 	return $quarter;
 }
@@ -330,7 +329,7 @@ global $errorStatus;
 			window.location="index.php"; </script> ';
 		}
 
-		if (isset ( $_SESSION ['totalDataPackages4'] )) {
+		if (isset ( $GLOBALS ['totalDataPackages4'] )) {
 
 			?>
 
@@ -357,7 +356,7 @@ global $errorStatus;
 				<?php
 		}
 
-		if (isset ( $_SESSION ['dataPackageDownloads4'] )) {
+		if (isset ( $GLOBALS ['dataPackageDownloads4'] )) {
 			?>
       <div class="page-break"> </div>
       <div class="starter-template">
@@ -378,7 +377,7 @@ global $errorStatus;
 		?>
 
 		<?php
-		if ((isset ( $_SESSION ['totalDataPackages4'] )) && (isset ( $_SESSION ['updateDataPackages4'] ))) {
+		if ((isset ( $GLOBALS ['totalDataPackages4'] )) && (isset ( $GLOBALS ['updateDataPackages4'] ))) {
 			?>
 		<div class="starter-template">
 				<p class="lead">Network Summary Statistics</p>
@@ -386,39 +385,39 @@ global $errorStatus;
 				<table class="table table-striped table-bordered">
 					<tr>
 						<th></th>
-						<th><?php echo $_SESSION['CurrentQuarterDate']; ?></th>
-						<th><?php echo $_SESSION['PreviousQuarterDate']; ?></th>
+						<th><?php echo $GLOBALS['CurrentQuarterDate']; ?></th>
+						<th><?php echo $GLOBALS['PreviousQuarterDate']; ?></th>
 						<th>A year Ago</th>
 						<th>Last 12 Months</th>
 					</tr>
 					<tr>
 						<td>Number of data packages published</td>
-						<td><?php echo $_SESSION['totalDataPackagesCurrentQ']; ?></td>
-						<td><?php echo $_SESSION['totalDataPackagesLastQ']; ?></td>
-						<td><?php echo $_SESSION['totalDataPackagesAyear']; ?></td>
-						<td><?php echo $_SESSION['totalDataPackages12Month']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackagesCurrentQ']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackagesLastQ']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackagesAyear']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackages12Month']; ?></td>
 					</tr>
 					<tr>
 						<td>Number of data package updates/revisions</td>
-						<td><?php echo $_SESSION['updateDataPackages4']; ?></td>
-						<td><?php echo $_SESSION['updateDataPackages3']; ?></td>
-						<td><?php echo $_SESSION['totalUpdateDataPackageAYearAgo']; ?></td>
-						<td><?php echo ($_SESSION['updateDataPackages1'] + $_SESSION['updateDataPackages2'] + $_SESSION['updateDataPackages3'] + $_SESSION['updateDataPackages4']); ?></td>
+						<td><?php echo $GLOBALS['updateDataPackages4']; ?></td>
+						<td><?php echo $GLOBALS['updateDataPackages3']; ?></td>
+						<td><?php echo $GLOBALS['totalUpdateDataPackageAYearAgo']; ?></td>
+						<td><?php echo ($GLOBALS['updateDataPackages1'] + $GLOBALS['updateDataPackages2'] + $GLOBALS['updateDataPackages3'] + $GLOBALS['updateDataPackages4']); ?></td>
 					</tr>
 				</table>
 
 				<table class="table table-striped table-bordered">
 					<tr>
 						<th></th>
-						<th>Current Quarter - <?php echo $_SESSION['AsOfCurrentQuarterDate']; ?></th>
-						<th>Previous Quarter - <?php echo $_SESSION['AsOfPreviousQuarterDate']; ?></th>
-						<th>A year ago - <?php echo $_SESSION['AsOfPreviousYearDate']; ?></th>
+						<th>Current Quarter - <?php echo $GLOBALS['AsOfCurrentQuarterDate']; ?></th>
+						<th>Previous Quarter - <?php echo $GLOBALS['AsOfPreviousQuarterDate']; ?></th>
+						<th>A year ago - <?php echo $GLOBALS['AsOfPreviousYearDate']; ?></th>
 					</tr>
 					<tr>
 						<td>Total number of published data packages</td>
-						<td><?php echo $_SESSION['totalDataPackages4']; ?></td>
-						<td><?php echo $_SESSION['totalDataPackages3']; ?></td>
-						<td><?php echo $_SESSION['totalCreateDataPackageAYearAgo']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackages4']; ?></td>
+						<td><?php echo $GLOBALS['totalDataPackages3']; ?></td>
+						<td><?php echo $GLOBALS['totalCreateDataPackageAYearAgo']; ?></td>
 					</tr>
 				</table>
 			</div>
@@ -428,7 +427,7 @@ global $errorStatus;
 		?>
 
 		<?php
-		if ((isset ( $_SESSION ['recentlyCreatedDataPackages'])) && (isset($_SESSION ['recentPackages']))) {
+		if ((isset ( $GLOBALS ['recentlyCreatedDataPackages'])) && (isset($GLOBALS ['recentPackages']))) {
 
 			?>
     <div class="page-break"> </div>
@@ -449,7 +448,7 @@ global $errorStatus;
 					</tr>
 					<?php
 
-			$data = $_SESSION ['recentPackages'];
+			$data = $GLOBALS ['recentPackages'];
 			$size = (count($data) > 10 ? 10 : count($data));
 			for($i = 0; $i < $size; $i ++) {
 				?><tr>
@@ -466,21 +465,21 @@ global $errorStatus;
 		} // end if isset( recentlyCreatedDataPackages and recentPackages)
 		//saveCurrentPage();
 	/*
-		if (isset ( $_SESSION ['totalDataPackages'] )){
-			unset ( $_SESSION ['totalDataPackages'] );
+		if (isset ( $GLOBALS ['totalDataPackages'] )){
+			unset ( $GLOBALS ['totalDataPackages'] );
 		}
-		if (isset ( $_SESSION ['updateDataPackages'] )){
-			unset ( $_SESSION ['updateDataPackages'] );
+		if (isset ( $GLOBALS ['updateDataPackages'] )){
+			unset ( $GLOBALS ['updateDataPackages'] );
 		}
-		if (isset ( $_SESSION ['dataPackageDownloads'] )){
-			unset ( $_SESSION ['dataPackageDownloads'] );
+		if (isset ( $GLOBALS ['dataPackageDownloads'] )){
+			unset ( $GLOBALS ['dataPackageDownloads'] );
 		}
-		if (isset ( $_SESSION ['dataPackageArchiveDownloads'] )){
-			unset ( $_SESSION ['dataPackageArchiveDownloads'] );
+		if (isset ( $GLOBALS ['dataPackageArchiveDownloads'] )){
+			unset ( $GLOBALS ['dataPackageArchiveDownloads'] );
 		}
 
-		if (isset ( $_SESSION ['recentlyCreatedDataPackages'] )) {
-			unset ( $_SESSION ['recentlyCreatedDataPackages'] );
+		if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] )) {
+			unset ( $GLOBALS ['recentlyCreatedDataPackages'] );
 		}
    */
 		?>
@@ -521,9 +520,9 @@ global $errorStatus;
 	<script type="text/javascript" src="../dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="//www.google.com/jsapi"></script>
 
-	<script type="text/javascript" src="//canvg.googlecode.com/svn/trunk/canvg.js"></script>
-	<script type="text/javascript" src="//canvg.googlecode.com/svn/trunk/rgbcolor.js"></script>
-	<script type="text/javascript" src="//canvg.googlecode.com/svn/trunk/StackBlur.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/rgbcolor.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/StackBlur.js"></script>
+  <script type="text/javascript" src="http://canvg.github.io/canvg/canvg.js"></script>
 	<script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChartTotalDataPackages);
@@ -532,11 +531,11 @@ global $errorStatus;
       function drawChartTotalDataPackages() {
         var data = google.visualization.arrayToDataTable([
           ['Quarter', 'Total Packages'],
-          [<?php echo "'".$_SESSION['quarterTitle']['0']."', ".$_SESSION['totalDataPackages0']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['1']."', ".$_SESSION['totalDataPackages1']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['2']."', ".$_SESSION['totalDataPackages2']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['3']."', ".$_SESSION['totalDataPackages3']; ?>],
-          [<?php echo "'".$_SESSION['quarterTitle']['4']."', ".$_SESSION['totalDataPackages4']; ?>],
+          [<?php echo "'".$GLOBALS['quarterTitle']['0']."', ".$GLOBALS['totalDataPackages0']; ?>],
+          [<?php echo "'".$GLOBALS['quarterTitle']['1']."', ".$GLOBALS['totalDataPackages1']; ?>],
+          [<?php echo "'".$GLOBALS['quarterTitle']['2']."', ".$GLOBALS['totalDataPackages2']; ?>],
+          [<?php echo "'".$GLOBALS['quarterTitle']['3']."', ".$GLOBALS['totalDataPackages3']; ?>],
+          [<?php echo "'".$GLOBALS['quarterTitle']['4']."', ".$GLOBALS['totalDataPackages4']; ?>],
         ]);
 
         var options = {
@@ -554,11 +553,11 @@ global $errorStatus;
       function drawChartDataPackageDownloads() {
           var data = google.visualization.arrayToDataTable([
             ['Quarter', 'Number of Data Downloads', 'Number of Data Archive Downloads'],
-            [<?php echo "'".$_SESSION['quarterTitle']['0']."'"; ?>, <?php echo $_SESSION['dataPackageDownloads0']; ?>,  <?php echo $_SESSION['dataPackageArchiveDownloads0']; ?>],
-            [<?php echo "'".$_SESSION['quarterTitle']['1']."'"; ?>, <?php echo $_SESSION['dataPackageDownloads1']; ?>,  <?php echo $_SESSION['dataPackageArchiveDownloads1']; ?>],
-            [<?php echo "'".$_SESSION['quarterTitle']['2']."'"; ?>, <?php echo $_SESSION['dataPackageDownloads2']; ?>,  <?php echo $_SESSION['dataPackageArchiveDownloads2']; ?>],
-            [<?php echo "'".$_SESSION['quarterTitle']['3']."'"; ?>, <?php echo $_SESSION['dataPackageDownloads3']; ?>,  <?php echo $_SESSION['dataPackageArchiveDownloads3']; ?>],
-            [<?php echo "'".$_SESSION['quarterTitle']['4']."'"; ?>, <?php echo $_SESSION['dataPackageDownloads4']; ?>,  <?php echo $_SESSION['dataPackageArchiveDownloads4']; ?>],
+            [<?php echo "'".$GLOBALS['quarterTitle']['0']."'"; ?>, <?php echo $GLOBALS['dataPackageDownloads0']; ?>,  <?php echo $GLOBALS['dataPackageArchiveDownloads0']; ?>],
+            [<?php echo "'".$GLOBALS['quarterTitle']['1']."'"; ?>, <?php echo $GLOBALS['dataPackageDownloads1']; ?>,  <?php echo $GLOBALS['dataPackageArchiveDownloads1']; ?>],
+            [<?php echo "'".$GLOBALS['quarterTitle']['2']."'"; ?>, <?php echo $GLOBALS['dataPackageDownloads2']; ?>,  <?php echo $GLOBALS['dataPackageArchiveDownloads2']; ?>],
+            [<?php echo "'".$GLOBALS['quarterTitle']['3']."'"; ?>, <?php echo $GLOBALS['dataPackageDownloads3']; ?>,  <?php echo $GLOBALS['dataPackageArchiveDownloads3']; ?>],
+            [<?php echo "'".$GLOBALS['quarterTitle']['4']."'"; ?>, <?php echo $GLOBALS['dataPackageDownloads4']; ?>,  <?php echo $GLOBALS['dataPackageArchiveDownloads4']; ?>],
           ]);
 
           var options = {

@@ -16,7 +16,7 @@ function callAuditReportTool($url, $username, $password, $var_name_to_set=null) 
 	$retValue = curl_exec ( $curl );
 	curl_close ( $curl );
   if(!is_null($var_name_to_set )) {
-    $_SESSION [$var_name_to_set] = $retValue;
+    $GLOBALS [$var_name_to_set] = $retValue;
   }
   return $retValue;
 }

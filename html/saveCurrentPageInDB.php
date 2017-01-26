@@ -27,42 +27,42 @@ while ( ! $uniqueRecordID ) {
 }
 
 //Storing all the necessary values in a temporary variable
-$value1 = $_SESSION ['quarterTitle'] ['0'];
-$value2 = $_SESSION ['quarterTitle'] ['1'];
-$value3 = $_SESSION ['quarterTitle'] ['2'];
-$value4 = $_SESSION ['quarterTitle'] ['3'];
-$value5 = $_SESSION ['quarterTitle'] ['4'];
-$value6 = $_SESSION ['totalDataPackages0'];
-$value7 = $_SESSION ['totalDataPackages1'];
-$value8 = $_SESSION ['totalDataPackages2'];
-$value9 = $_SESSION ['totalDataPackages3'];
-$value10 = $_SESSION ['totalDataPackages4'];
-$value11 = $_SESSION ['dataPackageDownloads0'];
-$value12 = $_SESSION ['dataPackageDownloads1'];
-$value13 = $_SESSION ['dataPackageDownloads2'];
-$value14 = $_SESSION ['dataPackageDownloads3'];
-$value15 = $_SESSION ['dataPackageDownloads4'];
-$value16 = $_SESSION ['dataPackageArchiveDownloads0'];
-$value17 = $_SESSION ['dataPackageArchiveDownloads1'];
-$value18 = $_SESSION ['dataPackageArchiveDownloads2'];
-$value19 = $_SESSION ['dataPackageArchiveDownloads3'];
-$value20 = $_SESSION ['dataPackageArchiveDownloads4'];
-$value21 = $_SESSION ['CurrentQuarterDate'];
-$value22 = $_SESSION ['PreviousQuarterDate'];
-$value23 = $_SESSION ['totalDataPackagesCurrentQ'];
-$value24 = $_SESSION ['totalDataPackagesLastQ'];
-$value25 = $_SESSION ['totalDataPackagesAyear'];
-$value26 = $_SESSION ['totalDataPackages12Month'];
-$value27 = $_SESSION ['updateDataPackages1'];
-$value28 = $_SESSION ['updateDataPackages2'];
-$value29 = $_SESSION ['updateDataPackages3'];
-$value30 = $_SESSION ['updateDataPackages4'];
-$value31 = $_SESSION ['totalUpdateDataPackageAYearAgo'];
-$value32 = $_SESSION ['AsOfCurrentQuarterDate'];
-$value33 = $_SESSION ['AsOfPreviousQuarterDate'];
-$value34 = $_SESSION ['AsOfPreviousYearDate'];
-$value35 = $_SESSION ['totalCreateDataPackageAYearAgo'];
-$value36 = $_SESSION ['site'];
+$value1 = $GLOBALS ['quarterTitle'] ['0'];
+$value2 = $GLOBALS ['quarterTitle'] ['1'];
+$value3 = $GLOBALS ['quarterTitle'] ['2'];
+$value4 = $GLOBALS ['quarterTitle'] ['3'];
+$value5 = $GLOBALS ['quarterTitle'] ['4'];
+$value6 = $GLOBALS ['totalDataPackages0'];
+$value7 = $GLOBALS ['totalDataPackages1'];
+$value8 = $GLOBALS ['totalDataPackages2'];
+$value9 = $GLOBALS ['totalDataPackages3'];
+$value10 = $GLOBALS ['totalDataPackages4'];
+$value11 = $GLOBALS ['dataPackageDownloads0'];
+$value12 = $GLOBALS ['dataPackageDownloads1'];
+$value13 = $GLOBALS ['dataPackageDownloads2'];
+$value14 = $GLOBALS ['dataPackageDownloads3'];
+$value15 = $GLOBALS ['dataPackageDownloads4'];
+$value16 = $GLOBALS ['dataPackageArchiveDownloads0'];
+$value17 = $GLOBALS ['dataPackageArchiveDownloads1'];
+$value18 = $GLOBALS ['dataPackageArchiveDownloads2'];
+$value19 = $GLOBALS ['dataPackageArchiveDownloads3'];
+$value20 = $GLOBALS ['dataPackageArchiveDownloads4'];
+$value21 = $GLOBALS ['CurrentQuarterDate'];
+$value22 = $GLOBALS ['PreviousQuarterDate'];
+$value23 = $GLOBALS ['totalDataPackagesCurrentQ'];
+$value24 = $GLOBALS ['totalDataPackagesLastQ'];
+$value25 = $GLOBALS ['totalDataPackagesAyear'];
+$value26 = $GLOBALS ['totalDataPackages12Month'];
+$value27 = $GLOBALS ['updateDataPackages1'];
+$value28 = $GLOBALS ['updateDataPackages2'];
+$value29 = $GLOBALS ['updateDataPackages3'];
+$value30 = $GLOBALS ['updateDataPackages4'];
+$value31 = $GLOBALS ['totalUpdateDataPackageAYearAgo'];
+$value32 = $GLOBALS ['AsOfCurrentQuarterDate'];
+$value33 = $GLOBALS ['AsOfPreviousQuarterDate'];
+$value34 = $GLOBALS ['AsOfPreviousYearDate'];
+$value35 = $GLOBALS ['totalCreateDataPackageAYearAgo'];
+$value36 = $GLOBALS ['site'];
 
 //Storing the post comments into local variable so that they can be inserted into database.
 $comment1 = $_POST ['comment1'];
@@ -131,8 +131,8 @@ $retrievedData = $result->fetchArray ();
 
 if ($retrievedData ['ID'] == null)
 	$recordAlreadypresent = false;
-//If present, check if the comments are the same. 
-else {		
+//If present, check if the comments are the same.
+else {
 	$stmt = $db->prepare ( 'SELECT * FROM saveReportComments where reportID=:id' );
 	$stmt->bindValue ( ':id', $retrievedData ['ID'], SQLITE3_INTEGER );
 	$result = $stmt->execute ();
@@ -159,31 +159,30 @@ else {
 
 //If record does not exist, then create it by entering the data into respective tables.
 if (! $recordAlreadypresent) {
-	
+
 	if ($db->exec ( "INSERT INTO saveLTERGeneratedReports VALUES ($reportID,'$value1','$value2','$value3','$value4','$value5',$value6,$value7,$value8,$value9,$value10,$value11,$value12,$value13,$value14,$value15,
 		$value16,$value17,$value18,$value19,$value20,'$value21','$value22',$value23,$value24,$value25,$value26,$value27,$value28,$value29,$value30,$value31,'$value32','$value33','$value34',$value35,'$value36','$value37')" ))
 		echo "New-".$reportID;
-	
-	if (isset ( $_SESSION ['recentPackages'] )) {
-		
-		$data = $_SESSION ['recentPackages'];
-		
+
+	if (isset ( $GLOBALS ['recentPackages'] )) {
+
+		$data = $GLOBALS ['recentPackages'];
+
 		foreach ( $data as $value ) {
-			
+
 			$identifierLink = $value ['identifierLink'];
 			$name = $value ['name'];
 			$author = $value ['author'];
 			$date = $value ['date'];
 			$title = $value ['title'];
-			
+
 			$db->exec ( "INSERT INTO saveRecentPackages(reportID,identifierLink,name,author,date,title) VALUES ($reportID,'$identifierLink','$name','$author','$date','$title')" );
 		}
 	}
-	
+
 	$db->exec ( "INSERT INTO saveReportComments(reportID,comment1,comment2,comment3,comment4) VALUES ($reportID,'$comment1','$comment2','$comment3','$comment4')" );
 }
 $db->close ();
 unset ( $db );
 
 ?>
-

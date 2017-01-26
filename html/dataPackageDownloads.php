@@ -16,25 +16,25 @@ function createDataPackagesArchiveDownloadsInputData($beginDate, $endDate) {
 //Once we have the response from PASTA, we need to count the number of packages present and set those values which will be used to plot the graph.
 function createDataPackagesDownloadOutput($xmlData, $quarter, $site) {
 	$responseXML = new SimpleXMLElement ( $xmlData );
-	
+
 	$count = countPackages ( $quarter, $responseXML , $site);
-	
-	$_SESSION ['dataPackageDownloads1'] = $count ['1'];
-	$_SESSION ['dataPackageDownloads2'] = $count ['2'];
-	$_SESSION ['dataPackageDownloads3'] = $count ['3'];
-	$_SESSION ['dataPackageDownloads4'] = $count ['4'];
-	$_SESSION ['dataPackageDownloads0'] = $count ['0'];
+
+	$GLOBALS ['dataPackageDownloads1'] = $count ['1'];
+	$GLOBALS ['dataPackageDownloads2'] = $count ['2'];
+	$GLOBALS ['dataPackageDownloads3'] = $count ['3'];
+	$GLOBALS ['dataPackageDownloads4'] = $count ['4'];
+	$GLOBALS ['dataPackageDownloads0'] = $count ['0'];
 }
 //Once we have the response from PASTA, we need to count the number of packages present and set those values which will be used to plot the graph.
 function createDataPackagesArchiveDownloadOutput($xmlData, $quarter, $site) {
 	$responseXML = new SimpleXMLElement ( $xmlData );
 
 	$count = countPackages ( $quarter, $responseXML, $site );
-	
-	$_SESSION ['dataPackageArchiveDownloads1'] = $count ['1'];
-	$_SESSION ['dataPackageArchiveDownloads2'] = $count ['2'];
-	$_SESSION ['dataPackageArchiveDownloads3'] = $count ['3'];
-	$_SESSION ['dataPackageArchiveDownloads4'] = $count ['4'];
-	$_SESSION ['dataPackageArchiveDownloads0'] = $count ['0'];
+
+	$GLOBALS ['dataPackageArchiveDownloads1'] = $count ['1'];
+	$GLOBALS ['dataPackageArchiveDownloads2'] = $count ['2'];
+	$GLOBALS ['dataPackageArchiveDownloads3'] = $count ['3'];
+	$GLOBALS ['dataPackageArchiveDownloads4'] = $count ['4'];
+	$GLOBALS ['dataPackageArchiveDownloads0'] = $count ['0'];
 }
 ?>
