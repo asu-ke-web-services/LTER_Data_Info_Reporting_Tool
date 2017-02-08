@@ -18,7 +18,6 @@
 
 </head>
 <?php
-
 // Global declaration of the pasta URL so that if we have to make a change, it can be done in one place.
 $pastaURL = "http://pasta.lternet.edu/";
 $errorStatus = "";
@@ -74,26 +73,26 @@ function populateDropdownContent() {
 				program officers, and other interested parties</p>
 			<hr>
 		</div>
-		<div class="col-md-12">	
-		
+		<div class="col-md-12">
+
 		 <?php
-			
+
 			global $errorStatus;
 			if ($errorStatus === "reportError") {
 				echo '<script> alert("There was a problem during error generation. Please try again.");
 			window.location="index.php"; </script> ';
 			}
-			?> 
-		
+			?>
+
 		<?php
-		
+
 		global $errorStatus;
 		if ($errorStatus === "invalidLogin") {
 			echo '<script> alert("Unable to generate the report. Please verify the login credentials and try again.");
 			window.location="index.php"; </script> ';
 		}
 		?>
-		
+
 			<p align="center">
 				<i>Please provide the login information to generate LTER Network
 					System Report. <br>Please note that the report generation may take
@@ -103,7 +102,7 @@ function populateDropdownContent() {
 			<form id="reportForm" class="form-signin" method="POST"
 				action="generatedReport.php">
 				<input id="username" name="username" type="text"
-					class="form-control" placeholder="Username" autofocus> 
+					class="form-control" placeholder="Username" autofocus>
 				<input id="password" name="password" type="password" class="form-control"
 					placeholder="Password"><br>
 
@@ -116,9 +115,9 @@ function populateDropdownContent() {
 					<ul class="dropdown-menu">
 						<li><a>All Sites</a></li>
 						<li role="presentation" class="divider"></li>
-    				            <?php			
+    				            <?php
 									$rows = populateDropdownContent();
-									for($i = 0; $i < sizeof($rows); $i ++) {									
+									for($i = 0; $i < sizeof($rows); $i ++) {
 								?>
 									<li><a><?php echo $rows[$i]?></a></li>
 								<?php } ?>
@@ -132,13 +131,13 @@ function populateDropdownContent() {
 				<button class="btn btn-lg btn-primary btn-block" type="submit"
 					name="submitReport">Generate LTER Network Information System Report</button>
 			</form>
-		
+
 			<div class="starter-template" id="afterSubmit">
 				<p class="lead">Please wait while we generate the report.....</p>
 			</div>
-		
+
 		</div>
-		
+
 	</div>
 	<!-- /.container -->
 
@@ -150,8 +149,8 @@ function populateDropdownContent() {
 
 	<script language="JavaScript">
 	$(document).ready(function() {
-		$('#afterSubmit').hide();	
-		$('#reportForm').submit(function() {	
+		$('#afterSubmit').hide();
+		$('#reportForm').submit(function() {
 				if(($('#username').val().length == 0) || ($('#password').val().length == 0)){
 					alert("Please enter username and password for report generation");
 					return false;
@@ -159,18 +158,18 @@ function populateDropdownContent() {
 				if($.trim($('.dropdown').find('#siteSelectButton').text()) == "Select"){
 					alert("Please select the site to generate the report");
 					return false;
-				}		
+				}
 				$('#reportForm').hide();
 				$('#afterSubmit').show();
-				$('#site').val($('.dropdown').find('#siteSelectButton').text());				
-			
+				$('#site').val($('.dropdown').find('#siteSelectButton').text());
+
 		}).change();
 
 		$(".dropdown-menu li a").click(function(){
-			  var selText = $(this).text();	
+			  var selText = $(this).text();
 			  $(this).parents('.dropdown').find('#siteSelectButton').html(selText+' <span class="caret"></span>');
 			});
-		
+
 	});
 </script>
 

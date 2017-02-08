@@ -18,7 +18,7 @@
 
 </head>
 <?php
-
+// error_reporting(E_ALL);
 // Global declaration of the pasta URL so that if we have to make a change, it can be done in one place.
 $pastaURL = "http://pasta.lternet.edu/";
 $errorStatus = "";
@@ -54,7 +54,8 @@ if (isset ( $_POST ['submitReport'] )) {
 // The main starter method where we process all the reports in sequence. This method controls all the methods that call PASTA to retrive the necessary information.
 function generateReport($site) {
 	session_start ();
-
+  // echo phpinfo();
+  // echo "start\n";
   $username = $_POST ['username'];
 	$password = $_POST ['password'];
 	$endDate = NULL;
@@ -77,43 +78,28 @@ function generateReport($site) {
 		$beginDate = new DateTime ( date ( DATE_ATOM, mktime ( 0, 0, 0, $endMonth - 3, 01, date ( "Y" ) - 1 ) ) );
 		$beginDate = $beginDate->format ( "Y-m-d" );
 	}
-
+  // echo '<script>console.log("Initialization: '.memory_get_usage().'")</script>';
 	// If its an authenticated user, then only continue to generate the report.
 	if (! authenticatedUser ()) {
 		unset ( $GLOBALS ['submitReport'] );
 		return "invalidLogin";
 	}
 	deleteFilesInDownloadDir();
+
+  // First compute all the 4 quarters thats necessary to generate the report.
 	$quarter = determineFourQuarters ( substr ( $endDate, 5, 2 ), $_POST ['quarter'] );
 
-	// First compute all the 4 quarters thats necessary to generate the report.
-
-	// Include the file that is used to compute the total number of packages and compute it
+  // Include the file that is used to compute the total number of packages and compute it
 	require_once ('totalNumberOfDataPackages.php');
-	createTotalDataPackagesInputData ( $beginDate, $endDate );
-	if (isset ( $GLOBALS ['totalDataPackages'] ) && $GLOBALS ['totalDataPackages'] != null) {
-		$deleteCount = countDeletedPackages ( $beginDate, $endDate, $quarter , $site);
-		createTotalDataPackagesOutput ( $GLOBALS ['totalDataPackages'], $quarter, $deleteCount, $site );
-    $GLOBALS ['totalDataPackages'] = -1;
-	}
+
+	createTotalDataPackagesInputData ( $beginDate, $endDate, $quarter , $site );
 
   // Adding a sleep command as making numerous calls to PASTA in a short interval results in failure to get the information.
-	sleep ( 4 );
+	sleep ( 2 );
 
 	// Include the file that is used to compute the total number of package downloads and compute it
 	require_once ('dataPackageDownloads.php');
-	createDataPackagesDownloadsInputData ( $beginDate, $endDate );
-	if (isset ( $GLOBALS ['dataPackageDownloads'] ) && $GLOBALS ['dataPackageDownloads'] != null) {
-		createDataPackagesDownloadOutput ( $GLOBALS ['dataPackageDownloads'], $quarter , $site);
-    $GLOBALS ['dataPackageDownloads'] = -1;
-  }else {
-    # else we need to mock the session variables
-    $GLOBALS ['dataPackageDownloads1'] = 0;
-    $GLOBALS ['dataPackageDownloads2'] = 0;
-    $GLOBALS ['dataPackageDownloads3'] = 0;
-    $GLOBALS ['dataPackageDownloads4'] = 0;
-    $GLOBALS ['dataPackageDownloads0'] = 0;
-  }
+	createDataPackagesDownloadsInputData ( $beginDate, $endDate, $quarter , $site );
 
   // Include the file that is used to compute the total number of archive package downloads and compute it
 	createDataPackagesArchiveDownloadsInputData ( $beginDate, $endDate );
@@ -131,14 +117,19 @@ function generateReport($site) {
 
   countDataPackagesForYearAgo ( $quarter, $endDate,$site );
 
-	// Include the file that is used to compute the random list to of packages created in the last three months.
+  // Include the file that is used to compute the random list to of packages created in the last three months.
 	require_once ('recentlyPublishedDatasets.php');
 	recentlyPublishedDataSetsInput ( $endDate );
-	if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] ) && $GLOBALS ['recentlyCreatedDataPackages'] != null){
+
+  if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] ) && $GLOBALS ['recentlyCreatedDataPackages'] != null){
     recentlyPublishedDataSets ( $GLOBALS ['recentlyCreatedDataPackages'] , $site);
     $GLOBALS ['recentlyCreatedDataPackages'] = -1;
   }
-
+  // echo "recentlyPublishedDataSets" + "\n";
+  // print_r($GLOBALS);
+  // echo xdebug_memory_usage()."\n";
+  // echo xdebug_peak_memory_usage()."\n";
+  // xdebug_print_function_stack("Memory Usage");
   return "success";
 }
 // Method to compute the quarter to which we generate the report. Since we are calculating the report for one year, this report will have exactly 4 quarters
@@ -520,9 +511,9 @@ global $errorStatus;
 	<script type="text/javascript" src="../dist/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="//www.google.com/jsapi"></script>
 
-  <script type="text/javascript" src="http://canvg.github.io/canvg/rgbcolor.js"></script>
-  <script type="text/javascript" src="http://canvg.github.io/canvg/StackBlur.js"></script>
-  <script type="text/javascript" src="http://canvg.github.io/canvg/canvg.js"></script>
+  <script type="text/javascript" src="https://canvg.github.io/canvg/rgbcolor.js"></script>
+  <script type="text/javascript" src="https://canvg.github.io/canvg/StackBlur.js"></script>
+  <script type="text/javascript" src="https://canvg.github.io/canvg/canvg.js"></script>
 	<script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChartTotalDataPackages);
