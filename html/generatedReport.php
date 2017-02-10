@@ -28,16 +28,15 @@ require_once ('curlWebServiceCalls.php');
 
 // Checking if the PHP Post variable submitReport has been set. This variable will be set when the user clicks on Generate LTER Report in the main page.
 if (isset ( $_POST ['submitReport'] )) {
-
 	global $errorStatus;
 	$errorStatus = "";
 
 	// Calling the starter method to generate report.
-  $reportGenerationStatus = generateReport ($_POST ['site']);
+	$reportGenerationStatus = generateReport ($_POST ['site']);
 
-  //echo "dataPackageArchiveDownloads: ".$GLOBALS["dataPackageArchiveDownloads"];
+	//echo "dataPackageArchiveDownloads: ".$GLOBALS["dataPackageArchiveDownloads"];
 
-  $GLOBALS['site'] = $_POST ['site'];
+	$GLOBALS['site'] = $_POST ['site'];
 
 	// If the user credentials is not correct, exit the report generation without computing the report.
 	if ($reportGenerationStatus == "invalidLogin") {
@@ -54,9 +53,7 @@ if (isset ( $_POST ['submitReport'] )) {
 // The main starter method where we process all the reports in sequence. This method controls all the methods that call PASTA to retrive the necessary information.
 function generateReport($site) {
 	session_start ();
-  // echo phpinfo();
-  // echo "start\n";
-  $username = $_POST ['username'];
+	$username = $_POST ['username'];
 	$password = $_POST ['password'];
 	$endDate = NULL;
 	$beginDate = NULL;
@@ -78,59 +75,42 @@ function generateReport($site) {
 		$beginDate = new DateTime ( date ( DATE_ATOM, mktime ( 0, 0, 0, $endMonth - 3, 01, date ( "Y" ) - 1 ) ) );
 		$beginDate = $beginDate->format ( "Y-m-d" );
 	}
-  // echo '<script>console.log("Initialization: '.memory_get_usage().'")</script>';
-	// If its an authenticated user, then only continue to generate the report.
+
+  // If its an authenticated user, then only continue to generate the report.
 	if (! authenticatedUser ()) {
 		unset ( $GLOBALS ['submitReport'] );
 		return "invalidLogin";
 	}
 	deleteFilesInDownloadDir();
 
-  // First compute all the 4 quarters thats necessary to generate the report.
+	// First compute all the 4 quarters thats necessary to generate the report.
 	$quarter = determineFourQuarters ( substr ( $endDate, 5, 2 ), $_POST ['quarter'] );
 
-  // Include the file that is used to compute the total number of packages and compute it
+	// Include the file that is used to compute the total number of packages and compute it
 	require_once ('totalNumberOfDataPackages.php');
-
 	createTotalDataPackagesInputData ( $beginDate, $endDate, $quarter , $site );
-
-  // Adding a sleep command as making numerous calls to PASTA in a short interval results in failure to get the information.
+	// Adding a sleep command as making numerous calls to PASTA in a short interval results in failure to get the information.
 	sleep ( 2 );
 
 	// Include the file that is used to compute the total number of package downloads and compute it
 	require_once ('dataPackageDownloads.php');
-	createDataPackagesDownloadsInputData ( $beginDate, $endDate, $quarter , $site );
+	createDataPackagesDownloadsInputData ( $beginDate, $endDate, $quarter , $site);
 
-  // Include the file that is used to compute the total number of archive package downloads and compute it
-	createDataPackagesArchiveDownloadsInputData ( $beginDate, $endDate );
-	if (isset ( $GLOBALS ['dataPackageArchiveDownloads'] ) && $GLOBALS ['dataPackageArchiveDownloads'] != null){
-    createDataPackagesArchiveDownloadOutput ( $GLOBALS ['dataPackageArchiveDownloads'], $quarter , $site);
-    $GLOBALS ['dataPackageArchiveDownloads'] = -1;
-  }
+	createDataPackagesArchiveDownloadsInputData ( $beginDate, $endDate, $quarter, $site );
 
-  // Include the file that is used to compute the total number of packages that were updated and compute it
-	updateTotalDataPackagesInputData ( $beginDate, $endDate );
-	if (isset ( $GLOBALS ['updateDataPackages'] ) && $GLOBALS ['updateDataPackages'] != null){
-    updateDataPackagesOutput ( $GLOBALS ['updateDataPackages'], $quarter, $site );
-    $GLOBALS ['updateDataPackages'] = -1;
-  }
+	updateTotalDataPackagesInputData ( $beginDate, $endDate, $quarter , $site);
 
-  countDataPackagesForYearAgo ( $quarter, $endDate,$site );
+	countDataPackagesForYearAgo ($quarter, $endDate, $site);
 
-  // Include the file that is used to compute the random list to of packages created in the last three months.
+	// Include the file that is used to compute the random list to of packages created in the last three months.
 	require_once ('recentlyPublishedDatasets.php');
 	recentlyPublishedDataSetsInput ( $endDate );
 
-  if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] ) && $GLOBALS ['recentlyCreatedDataPackages'] != null){
-    recentlyPublishedDataSets ( $GLOBALS ['recentlyCreatedDataPackages'] , $site);
-    $GLOBALS ['recentlyCreatedDataPackages'] = -1;
-  }
-  // echo "recentlyPublishedDataSets" + "\n";
-  // print_r($GLOBALS);
-  // echo xdebug_memory_usage()."\n";
-  // echo xdebug_peak_memory_usage()."\n";
-  // xdebug_print_function_stack("Memory Usage");
-  return "success";
+	if (isset ( $GLOBALS ['recentlyCreatedDataPackages'] ) && $GLOBALS ['recentlyCreatedDataPackages'] != null){
+		recentlyPublishedDataSets ( $GLOBALS ['recentlyCreatedDataPackages'] , $site);
+		$GLOBALS ['recentlyCreatedDataPackages'] = -1;
+	}
+	return "success";
 }
 // Method to compute the quarter to which we generate the report. Since we are calculating the report for one year, this report will have exactly 4 quarters
 function determineFourQuarters($month) {
@@ -255,10 +235,10 @@ function authenticatedUser() {
 function populateDropdownContent() {
 	global $pastaURL;
 	$url = $pastaURL . "package/eml";
-  $site_list = file_get_contents($url);
-  //Split up the site names based on the newline
-  $dropdown = preg_split('/\s+/', $site_list);
-  return $dropdown;
+	$site_list = file_get_contents($url);
+	//Split up the site names based on the newline
+	$dropdown = preg_split('/\s+/', $site_list);
+	return $dropdown;
 }
 
 ?>
